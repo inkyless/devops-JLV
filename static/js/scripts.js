@@ -10,7 +10,7 @@ ImageUpload.addEventListener('change', function() {
     const imageDataUrl = e.target.result;
 
     const fileInput = document.getElementById("output")
-    const imagepreview = document.getElementById("image_preview")
+    const imagepreview = document.getElementById("image-preview")
     const submitButton = document.getElementById("submit")
     const submitBox = document.getElementById("submit-wrap")
     imagepreview.innerHTML="Image Preview"
