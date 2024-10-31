@@ -27,10 +27,10 @@ jobs:
         uses: super-linter/super-linter@v7.1.0 # x-release-please-version
         env:
           DEFAULT_BRANCH : main
-          VALIDATE_CSS_PRETTIER	: true
+          VALIDATE_CSS	: true
           VALIDATE_HTML : true
           VALIDATE_JAVASCRIPT_ES	: true
-          VALIDATE_PYTHON_BLACK : true
+          VALIDATE_PYTHON : true
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
