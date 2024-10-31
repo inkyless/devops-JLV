@@ -4,7 +4,6 @@ on:
   push:
     branches:
     - main
-    - violalag
 
 jobs:
   build:
@@ -27,7 +26,7 @@ jobs:
         uses: super-linter/super-linter@v7.1.0 # x-release-please-version
         env:
           DEFAULT_BRANCH : main
-          VALIDATE_CSS	: true
+          VALIDATE_ALL_CODEBASE: true
           VALIDATE_HTML : true
           VALIDATE_JAVASCRIPT_ES	: true
           VALIDATE_PYTHON : true
