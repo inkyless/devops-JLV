@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@actions/core": "^1.11.1",
     "prettier": "3.3.3"
   }
 }
