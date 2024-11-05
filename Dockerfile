@@ -1,12 +1,15 @@
-FROM python:3.12-alpine
+FROM python:3.10-bookworm
+#Jangan python dari 3.12 ver ke atas karena perlu module distutils
 
-WORKDIR /python-docker
+WORKDIR /app
 
 COPY requirements.txt requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN apt update && apt install -y libsm6 libxext6 ffmpeg libfontconfig1 libxrender1 libgl1-mesa-glx
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 8080
+ENV FLASK_APP=app.py
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+#Referensi command prompt (flask run --host=0.0.0.0 --port=5000)
+CMD [ "flask","run","--host=0.0.0.0","--port=5000"]

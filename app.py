@@ -24,7 +24,6 @@ def allowed_file(filename):
 def index():
     return render_template("index.html")
 
-
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
     # Check if post request has file part
