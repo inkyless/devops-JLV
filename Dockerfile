@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV FLASK_APP=app.py
+EXPOSE 8080
 
-#Referensi command prompt (flask run --host=0.0.0.0 --port=5000)
-CMD [ "flask","run","--host=0.0.0.0","--port=5000"]
+#Referensi command prompt (waitress-serve --host=127.0.0.1 wsgi:app)
+CMD [ "waitress-serve","--host=127.0.0.1","wsgi:app"]
