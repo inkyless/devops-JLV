@@ -3,7 +3,7 @@
 }
 
 html {
-  height: 100%;
+  min-height: 100vh;
 }
 
 :root {
@@ -11,18 +11,16 @@ html {
   --green-primary: #a3c853;
   --orange-color: #ff8c00;
   --secondary-color: #008080;
-  --accent-color: #fff7e0;
+  --accent-color: rgb(255, 247, 224);
 }
 
 body {
   margin: 0;
   padding: 0;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background: linear-gradient(
-    315deg,
-    var(--green-primary) 40%,
-    var(--secondary-color)
-  );
+  background: linear-gradient(315deg,
+      var(--green-primary) 40%,
+      var(--secondary-color));
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -33,6 +31,7 @@ h1 {
   color: var(--accent-color);
   letter-spacing: 3px;
 }
+
 .drop-container {
   position: relative;
   display: flex;
@@ -89,14 +88,19 @@ input[type="file"]::file-selector-button {
 
 div#submit-wrap {
   margin: 0 1.5em;
-  display: flex;
+  display: none;
   justify-content: center;
-  padding: 1em 0;
-  visibility: hidden;
+  padding: 1.5em 1em;
+  visibility: hidden;  
+  flex-wrap: wrap;
+  background-color: rgba(255, 247, 224, 0.6);
 }
 
-#submit {
-  margin: 0 auto;
+#submit,
+#reset {
+  margin: 0 auto
+   0.5em;
+  min-width : 35%;
   font-size: 1.2em;
   font-weight: 600;
   background-color: var(--secondary-color);
@@ -107,11 +111,18 @@ div#submit-wrap {
   box-shadow: var(--orange-color) 0px 2px;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+  align-content:center;
 }
 
 #submit:hover,
-input[type="file"]::file-selector-button:hover {
+input[type="file"]::file-selector-button:hover,
+#reset:hover {
   background-color: var(--orange-color);
+}
+
+#reset{
+  text-align: center;
+  text-decoration: none;
 }
 
 .drop-container.drag-active {
@@ -123,7 +134,47 @@ input[type="file"]::file-selector-button:hover {
   color: #222;
 }
 
-#output {
-  width: 300px;
-  max-height: 400px;
+#output,
+#image-result img {
+  width: 200px;
+  max-height: auto;
+}
+
+#image-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#text-result {
+  text-align: center;
+  margin: 0 auto;
+  padding: 0 2em;
+}
+
+#result-label {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+#result-number {
+  font-style: italic;
+  font-weight: 600;
+}
+
+#text-result a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#text-result a:hover {
+  color: var(--secondary-color)
+}
+
+section:first-of-type {
+  background-color: rgba(255, 247, 224, 0.6);
+  margin: 0 1em;
+  padding: 1.5em 0;
+  border-radius: 5%;
+  box-shadow: 0.5em 0.5em 8px #688080b7;
 }
