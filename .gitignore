@@ -1,4 +1,8 @@
 __pycache__/
-.venv/
+env/
+LaporanUTS/
 instance/
 .webassets-cache
+node_modules/
+
+kubectl.exe

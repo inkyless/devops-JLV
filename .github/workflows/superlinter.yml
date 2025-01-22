@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - main
+  pull_request:
+    branches : 
+    - main
 
 jobs:
   build:
@@ -18,12 +21,12 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Super-linter
-        uses: super-linter/super-linter@v7.1.0 # x-release-please-version
+        uses: super-linter/super-linter@v7.0.0 # x-release-please-version
         env:
           DEFAULT_BRANCH : main
           VALIDATE_ALL_CODEBASE: true
@@ -36,12 +39,39 @@ jobs:
       - name: Docker Login
         uses: docker/login-action@v3
         with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get Short Git SHA
+        id: vars
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      
 
       - name: Build and push container image
         uses: docker/build-push-action@v6
         with:
             push: true
             tags: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:latest
-            
+                  ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
+
+  deploy:
+      name: Deploy Kubernetes
+      runs-on: ubuntu-latest
+                      
+      permissions:
+        contents: read
+        packages: read
+        # To report GitHub Actions status checks
+        statuses: write
+
+      steps:
+        - name: Set up Kubectl
+          uses: azure/k8s-set-context@v1
+          with:
+            kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+        - name : Deploy
+          run : |
+            kubectl apply -f deployment.yaml
+            kubectl apply -f service.yaml
+
