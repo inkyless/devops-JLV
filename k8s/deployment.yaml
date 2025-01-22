@@ -18,12 +18,12 @@ spec:
       - name: app-container
         image: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
         resources:
-        requests:
-          cpu: "500m"          # Minimum CPU required (adjust as needed)
-          memory: "2Gi"        # Minimum memory required
         limits:
-          cpu: "2000m"         # Maximum CPU allowed
-          memory: "4Gi"        # Maximum memory allowed
+            memory: "512Mi"
+            cpu: "500m"
+        requests:
+            memory: "256Mi"
+            cpu: "250m"      
         ports:
         - containerPort: 8080
 
