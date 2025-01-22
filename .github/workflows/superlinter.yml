@@ -99,28 +99,14 @@ jobs:
         statuses: write
 
     steps:
-      # Step 1: Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Install Minikube
-      - name: Install Minikube
-        run: |
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      - name: Set up kind
+        uses: helm/kind-action@v1.6.0
+        with:
+          version: v0.20.0
 
-      # Step 3: Start Minikube
-      - name: Start Minikube
-        run: |
-          minikube start --driver=none
-
-      # Step 4: Verify Minikube Status
-      - name: Verify Minikube
-        run: |
-          kubectl cluster-info
-          minikube status
-
-      # Step 5: Apply Kubernetes Manifests
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f k8s/deployment.yaml
