@@ -120,6 +120,6 @@ jobs:
 
       - name: Forward Port for Service
         run: |
-              kubectl port-forward service/test-service-cicd 8080:8080 &
+              kubectl port-forward service/test-service-cicd 8080:80 &
               curl http://localhost:8080/health
 
