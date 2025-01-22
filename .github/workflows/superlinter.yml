@@ -56,37 +56,73 @@ jobs:
           
 
 
-  deploy:
-      name: Deploy Docker and Kubernetes
-      runs-on: ubuntu-latest
+  # deploy:
+  #     name: Deploy Docker and Kubernetes
+  #     runs-on: ubuntu-latest
                       
-      permissions:
+  #     permissions:
+  #       contents: read
+  #       packages: read
+  #       # To report GitHub Actions status checks
+  #       statuses: write
+
+  #     steps:
+  #         - name: Checkout Code
+  #           uses: actions/checkout@v3
+  #           with:
+  #             fetch-depth: 0
+
+  #         - name: Set up Kubectl
+  #           uses: azure/k8s-set-context@v1
+  #           with:
+  #               kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+  #         - name: Verify Kubernetes config
+  #           run: |
+  #             kubectl config view
+
+  #         - name: Verify Cluster Connection
+  #           run: |
+  #               kubectl cluster-info
+
+  #         - name : Deploy
+  #           run : |
+  #             kubectl apply -f k8s/deployment.yaml --validate=false
+  #             kubectl apply -f k8s/service.yaml --validate=false
+
+  test:
+    runs-on: ubuntu-latest
+    permissions:
         contents: read
         packages: read
         # To report GitHub Actions status checks
         statuses: write
 
-      steps:
-          - name: Checkout Code
-            uses: actions/checkout@v3
-            with:
-              fetch-depth: 0
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-          - name: Set up Kubectl
-            uses: azure/k8s-set-context@v1
-            with:
-                kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+      # Step 2: Install Minikube
+      - name: Install Minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-          - name: Verify Kubernetes config
-            run: |
-              kubectl config view
+      # Step 3: Start Minikube
+      - name: Start Minikube
+        run: |
+          minikube start --driver=none
 
-          - name: Verify Cluster Connection
-            run: |
-                kubectl cluster-info
+      # Step 4: Verify Minikube Status
+      - name: Verify Minikube
+        run: |
+          kubectl cluster-info
+          minikube status
 
-          - name : Deploy
-            run : |
-              kubectl apply -f k8s/deployment.yaml --validate=false
-              kubectl apply -f k8s/service.yaml --validate=false
+      # Step 5: Apply Kubernetes Manifests
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
 
