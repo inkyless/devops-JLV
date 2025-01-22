@@ -69,10 +69,10 @@ jobs:
             with:
               version: 'latest'
 
-          - name: Decode kubeconfig
+          - name: Set up kubeconfig
             run: |
               mkdir -p $HOME/.kube
-              echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+              echo "${{ secrets.KUBE_CONFIG_DATA }}" | > $HOME/.kube/config
 
           - name: Verify Kubernetes config
             run: |
