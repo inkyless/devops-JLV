@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deployment
+  labels:
+    app: test-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: test-deploy
+  template:
+    metadata:
+      labels:
+        app: test-deploy
+    spec:
+      containers:
+      - name: app-container
+        image: violalag/jlv-project:v3
+        resources:
+          limits:
+              memory: "512Mi"
+              cpu: "500m"
+          requests:
+              memory: "256Mi"
+              cpu: "250m"      
+        ports:
+        - containerPort: 8080
+
+
+        
