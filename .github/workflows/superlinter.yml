@@ -112,3 +112,14 @@ jobs:
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
 
+      - name: Verify Deployment
+        run: |
+            kubectl get deployments
+            kubectl get pods
+            kubectl get services
+
+      - name: Forward Port for Service
+        run: |
+              kubectl port-forward service/test-service-cicd 8080:8080 &
+              curl http://localhost:8080/health
+
