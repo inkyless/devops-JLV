@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: app-container
-        image: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
+        image: violalag/jlv-project:v3
         resources:
         limits:
             memory: "512Mi"
