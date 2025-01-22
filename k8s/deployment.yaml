@@ -18,12 +18,12 @@ spec:
       - name: app-container
         image: violalag/jlv-project:v3
         resources:
-        limits:
-            memory: "512Mi"
-            cpu: "500m"
-        requests:
-            memory: "256Mi"
-            cpu: "250m"      
+          limits:
+              memory: "512Mi"
+              cpu: "500m"
+          requests:
+              memory: "256Mi"
+              cpu: "250m"      
         ports:
         - containerPort: 8080
 
