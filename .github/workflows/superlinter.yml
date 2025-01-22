@@ -51,8 +51,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
             push: true
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:latest
-                  ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
+            tags: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
 
   deploy:
       name: Deploy Kubernetes
