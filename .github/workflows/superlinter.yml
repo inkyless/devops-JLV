@@ -72,12 +72,11 @@ jobs:
           - name: Set up kubeconfig
             run: |
               mkdir -p $HOME/.kube
-              echo "${{ secrets.KUBE_CONFIG_DATA }}" | > $HOME/.kube/config
+              echo "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
 
           - name: Verify Kubernetes config
             run: |
-              cat $HOME/.kube/config
-              kubectl config view
+              kubectl config view --minify
 
           - name : Deploy
             run : |
