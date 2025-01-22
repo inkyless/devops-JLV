@@ -35,26 +35,29 @@ jobs:
           VALIDATE_PYTHON : true
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
+    
       - name: Docker Login
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
       - name: Get Short Git SHA
         id: vars
         run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            
       
-
       - name: Build and push container image
         uses: docker/build-push-action@v6
         with:
-            push: true
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
+                push: true
+                tags: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
+          
+
 
   deploy:
-      name: Deploy Kubernetes
+      name: Deploy Docker and Kubernetes
       runs-on: ubuntu-latest
                       
       permissions:
@@ -69,42 +72,21 @@ jobs:
             with:
               fetch-depth: 0
 
-          - name: Set up kubectl
-            uses: azure/setup-kubectl@v1
+          - name: Set up Kubectl
+            uses: azure/k8s-set-context@v1
             with:
-              version: 'latest'
-
-          - name: Set up kubeconfig
-            run: |
-              mkdir -p $HOME/.kube
-              echo "
-              apiVersion: v1
-              clusters:
-              - cluster:
-                  certificate-authority-data: ${{ secrets.MINIKUBE_CA_CERT }}
-                  server: https://127.0.0.1:49676
-                name: minikube
-              contexts:
-              - context:
-                  cluster: minikube
-                  user: minikube
-                name: minikube
-              current-context: minikube
-              kind: Config
-              preferences: {}
-              users:
-              - name: minikube
-                user:
-                  client-certificate-data: ${{ secrets.MINIKUBE_CLIENT_CERT }}
-                  client-key-data: ${{ secrets.MINIKUBE_CLIENT_KEY }}
-              " > $HOME/.kube/config
+                kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
 
           - name: Verify Kubernetes config
             run: |
               kubectl config view
 
+          - name: Verify Cluster Connection
+            run: |
+                kubectl cluster-info
+
           - name : Deploy
             run : |
-              kubectl apply -f deployment.yaml --validate=false
-              kubectl apply -f service.yaml --validate=false
+              kubectl apply -f k8s/deployment.yaml --validate=false
+              kubectl apply -f k8s/service.yaml --validate=false
 
