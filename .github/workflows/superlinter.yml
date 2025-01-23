@@ -81,9 +81,7 @@ jobs:
           
       - name: Create kind Cluster
         run: kind create cluster --name kind
-            
-      - name: Verify kind Cluster
-        run: kind get clusters
+            kind get clusters
         
       - name: Configure kubectl for kind
         run: |
@@ -105,17 +103,10 @@ jobs:
             kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} app-container=${{ env.DOCKER_IMAGE }}:${{ env.sha }}
             kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }}
             
-      - name: Verify Service Details
+      - name: Verify Service Details and Pod Logs
         run: |
           kubectl get svc test-service-cicd -n default
-      
-      - name: Verify Pod Logs
-        run: |
-              kubectl logs $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default
-
-      - name: Verify Pod Listening Ports
-        run: |
-              kubectl exec $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default --user=root -- apt-get update && apt-get install -y net-tools
+          kubectl logs $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default
             
       - name: Health Check
         run: |
@@ -125,6 +116,7 @@ jobs:
         run: |              
               KIND_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kind-control-plane)
               NODE_PORT=30000
+              echo "KIND_NODE_IP=$KIND_NODE_IP"
               sleep 5
-              curl http://$KIND_NODE_IP:$NODE_PORT/health || curl http://localhost:$NODE_PORT/health
+              curl http://$KIND_NODE_IP:$NODE_PORT/health 
 
