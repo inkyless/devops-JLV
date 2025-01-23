@@ -81,7 +81,7 @@ jobs:
           
       - name: Create kind Cluster
         run: |
-              kind create cluster --name kind
+              kind create cluster --name kind --config=k8s/kind-config.yaml
               kind get clusters
         
       - name: Configure kubectl for kind
@@ -119,8 +119,12 @@ jobs:
               NODE_PORT=30000
               echo "KIND_NODE_IP=$KIND_NODE_IP"
               sleep 5
-              
+
               for i in {1..5}; do
-                curl http://$KIND_NODE_IP:$NODE_PORT/health && break || sleep 10
+                curl -v http://$KIND_NODE_IP:$NODE_PORT/health && break || sleep 10
               done
+
+      - name: Test Connectivity from Pod
+        run: |
+                kubectl exec -it $(kubectl get pods -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} -o=jsonpath='{.items[0].metadata.name}') -n ${{ env.K8S_NAMESPACE }} -- curl http://localhost:8080/health
 
