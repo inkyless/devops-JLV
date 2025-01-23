@@ -5,6 +5,11 @@ metadata:
   labels:
     app: test-deploy
 spec:
+    progressDeadlineSeconds: 600  # Increase timeout to 10 minutes
+    strategy:
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 1
   replicas: 3
   selector:
     matchLabels:
@@ -16,6 +21,7 @@ spec:
     spec:
       containers:
       - name: app-container
+        imagePullPolicy: Always
         image: violalag/jlv-project:latest
         resources:
           limits:
