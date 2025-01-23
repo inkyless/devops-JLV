@@ -5,10 +5,9 @@ metadata:
 spec:
   selector:
     app: test-deploy
-  type: LoadBalancer
+  type: NodePort
   ports:
   - protocol: TCP
-    port: 8080
+    port: 80
     targetPort: 8080
     nodePort: 30000   # The node port on which your service will be accessible
-  type: NodePort
