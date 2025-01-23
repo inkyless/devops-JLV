@@ -5,12 +5,12 @@ metadata:
   labels:
     app: test-deploy
 spec:
-    progressDeadlineSeconds: 600  # Increase timeout to 10 minutes
-    strategy:
-      rollingUpdate:
-        maxUnavailable: 1
-        maxSurge: 1
   replicas: 3
+  progressDeadlineSeconds: 600  # Increase timeout to 10 minutes
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: test-deploy
@@ -21,8 +21,8 @@ spec:
     spec:
       containers:
       - name: app-container
-        imagePullPolicy: Always
         image: violalag/jlv-project:latest
+        imagePullPolicy: Always
         resources:
           limits:
               memory: "512Mi"
@@ -33,19 +33,6 @@ spec:
         ports:
         - containerPort: 8080
 
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 15
-          periodSeconds: 10
-        
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 15
 
 
         
