@@ -11,7 +11,7 @@ on:
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/jlv-project
   K8S_NAMESPACE: default
-  DEPLOYMENT_NAME: test-deployment
+  DEPLOYMENT_NAME: test-deployment-cicd
 
 jobs:
   build:
@@ -93,17 +93,18 @@ jobs:
         run: |
                 kubectl apply -f k8s/deployment.yaml
                 kubectl apply -f k8s/service.yaml
+
+      - name: Verify Deployment Exists
+        run: |
+              kubectl get deployments -n ${{ env.K8S_NAMESPACE }}
+              kubectl get pods -n ${{ env.K8S_NAMESPACE }}
+              kubectl get services -n ${{ env.K8S_NAMESPACE }}
               
       - name: Deploy to Kubernetes
         run: |
             kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} app=${{ env.DOCKER_IMAGE }}:${{ env.sha }}
             kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }}
-  
-      - name: Verify Deployment
-        run: |
-            kubectl get pods -n ${{ env.K8S_NAMESPACE }}
-            kubectl get services -n ${{ env.K8S_NAMESPACE }}
-  
+            
       - name: Health Check
         run: |
             kubectl wait --for=condition=ready pod -l app=${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} --timeout=480s
