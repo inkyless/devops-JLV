@@ -116,7 +116,13 @@ jobs:
       
       - name: Test Connectivity from Pod
         run: |
-                kubectl exec $(kubectl get pods -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} -o=jsonpath='{.items[0].metadata.name}') -n ${{ env.K8S_NAMESPACE }} -- curl http://localhost:8080/health
+          POD_NAME=$(kubectl get pods -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} -o jsonpath='{.items[0].metadata.name}')
+          kubectl exec $POD_NAME -n ${{ env.K8S_NAMESPACE }} -- sh -c "
+            apt-get update && 
+            apt-get install -y curl && 
+            curl -v http://localhost:8080/health || 
+            (echo 'Connectivity failed' && exit 1)
+          "
 
       - name: Access Service via NodePort
         run: |              
