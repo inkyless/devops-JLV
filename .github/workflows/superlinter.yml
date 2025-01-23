@@ -111,11 +111,11 @@ jobs:
       
       - name: Verify Pod Logs
         run: |
-              kubectl logs test-deployment-cicd-$(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default
+              kubectl logs $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default
 
       - name: Verify Pod Listening Ports
         run: |
-              kubectl exec -it test-deployment-cicd-$(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default -- netstat -tuln
+              kubectl exec -it $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default -- netstat -tuln
             
       - name: Health Check
         run: |
