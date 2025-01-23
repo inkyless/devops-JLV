@@ -74,10 +74,22 @@ jobs:
                   ${{ env.DOCKER_IMAGE }}:${{ env.sha }}
                   ${{ env.DOCKER_IMAGE }}:latest
 
-      - name: Set up Kubernetes
-        uses: azure/setup-kubectl@v3
+      - name: Set up kind
+        uses: helm/kind-action@v1.6.0
         with:
-              version: 'latest'
+              version: v0.20.0
+          
+      - name: Configure kubectl for kind
+        run: |
+              kubectl cluster-info --context kind-kind
+
+              - name: Verify Kubernetes Cluster
+              run: kubectl cluster-info
+      
+      - name: Apply Kubernetes Manifests
+        run: |
+                kubectl apply -f k8s/deployment.yaml
+                kubectl apply -f k8s/service.yaml
               
       - name: Deploy to Kubernetes
         run: |
