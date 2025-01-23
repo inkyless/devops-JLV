@@ -96,7 +96,6 @@ jobs:
       - name: Verify Deployment Exists
         run: |
               kubectl get deployments -n ${{ env.K8S_NAMESPACE }}
-              kubectl get pods -n ${{ env.K8S_NAMESPACE }}
               kubectl get services -n ${{ env.K8S_NAMESPACE }}
               
       - name: Deploy to Kubernetes
@@ -112,16 +111,19 @@ jobs:
       - name: Health Check
         run: |
             kubectl wait --for=condition=ready pod -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} --timeout=480s
+            kubectl get pods -n ${{ env.K8S_NAMESPACE }}
+
       
       - name: Test Connectivity from Pod
         run: |
-                kubectl exec $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default -- curl http://localhost:8080/health
+                kubectl exec $(kubectl get pods -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} -o=jsonpath='{.items[0].metadata.name}') -n ${{ env.K8S_NAMESPACE }} -- curl http://localhost:8080/health
 
       - name: Access Service via NodePort
         run: |              
               KIND_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kind-control-plane)
-              NODE_PORT=30000
+              NODE_PORT=$(kubectl get svc test-service-cicd -n ${{ env.K8S_NAMESPACE }} -o=jsonpath='{.spec.ports[0].nodePort}')
               echo "KIND_NODE_IP=$KIND_NODE_IP"
+              echo "NODE_PORT=$NODE_PORT"
               sleep 5
 
               for i in {1..5}; do
