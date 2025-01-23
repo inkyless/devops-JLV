@@ -102,7 +102,7 @@ jobs:
               
       - name: Deploy to Kubernetes
         run: |
-            kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} app=${{ env.DOCKER_IMAGE }}:${{ env.sha }}
+            kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} app-container=${{ env.DOCKER_IMAGE }}:${{ env.sha }}
             kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }}
             
       - name: Health Check
