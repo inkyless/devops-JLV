@@ -115,7 +115,7 @@ jobs:
 
       - name: Verify Pod Listening Ports
         run: |
-              kubectl exec -it $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default -- netstat -tuln
+              kubectl exec $(kubectl get pods -l app=test-deploy -n default -o=jsonpath='{.items[0].metadata.name}') -n default -- apt-get update && apt-get install -y net-tools
             
       - name: Health Check
         run: |
