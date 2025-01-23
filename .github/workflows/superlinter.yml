@@ -8,6 +8,11 @@ on:
     branches : 
     - main
 
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/jlv-project
+  K8S_NAMESPACE: default
+  DEPLOYMENT_NAME: test-deployment
+
 jobs:
   build:
     name: Lint Code Base
@@ -36,61 +41,8 @@ jobs:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    
-      - name: Docker Login
-        uses: docker/login-action@v3
-        with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Get Short Git SHA
-        id: vars
-        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-            
-      
-      - name: Build and push container image
-        uses: docker/build-push-action@v6
-        with:
-                push: true
-                tags: ${{ vars.DOCKERHUB_USERNAME }}/jlv-project:${{ env.sha }}
-          
-
-
-  # deploy:
-  #     name: Deploy Docker and Kubernetes
-  #     runs-on: ubuntu-latest
-                      
-  #     permissions:
-  #       contents: read
-  #       packages: read
-  #       # To report GitHub Actions status checks
-  #       statuses: write
-
-  #     steps:
-  #         - name: Checkout Code
-  #           uses: actions/checkout@v3
-  #           with:
-  #             fetch-depth: 0
-
-  #         - name: Set up Kubectl
-  #           uses: azure/k8s-set-context@v1
-  #           with:
-  #               kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
-
-  #         - name: Verify Kubernetes config
-  #           run: |
-  #             kubectl config view
-
-  #         - name: Verify Cluster Connection
-  #           run: |
-  #               kubectl cluster-info
-
-  #         - name : Deploy
-  #           run : |
-  #             kubectl apply -f k8s/deployment.yaml --validate=false
-  #             kubectl apply -f k8s/service.yaml --validate=false
-
-  test:
+  test-deploy:
+    name : Build Docker Image and Deploy to Kubernetes
     runs-on: ubuntu-latest
     permissions:
         contents: read
@@ -101,29 +53,45 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Set up kind
-        uses: helm/kind-action@v1.6.0
         with:
-          version: v0.20.0
+          fetch-depth: 0
 
-      - name: Apply Kubernetes Manifests
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Get Short Git SHA
+        id: vars
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      
+      - name: Build and push container image
+        uses: docker/build-push-action@v6
+        with:
+                push: true
+                tags: |
+                  ${{ env.DOCKER_IMAGE }}:${{ env.sha }}
+                  ${{ env.DOCKER_IMAGE }}:latest
+
+      - name: Set up Kubernetes
+        uses: azure/setup-kubectl@v3
+        with:
+              version: 'latest'
+              
+      - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
-
+            kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} app=${{ env.DOCKER_IMAGE }}:${{ env.sha }}
+            kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }}
+  
       - name: Verify Deployment
         run: |
-            kubectl get deployments
-            kubectl get pods
-            kubectl get services
-
-      - name: Wait for Pods to be Ready
+            kubectl get pods -n ${{ env.K8S_NAMESPACE }}
+            kubectl get services -n ${{ env.K8S_NAMESPACE }}
+  
+      - name: Health Check
         run: |
-              kubectl wait --for=condition=ready pod -l app=test-deployment --timeout=480s
-
-      - name: Forward Port for Service
-        run: |
-              kubectl port-forward service/test-service-cicd 8080:80 &
-              curl http://localhost:8080/health
+            kubectl wait --for=condition=ready pod -l app=${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }} --timeout=480s
+            kubectl port-forward service/test-service-cicd 8080:80 -n ${{ env.K8S_NAMESPACE }} &
+            curl http://localhost:8080/health
 

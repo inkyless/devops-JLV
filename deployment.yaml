@@ -18,12 +18,12 @@ spec:
       - name: app-container
         image: violalag/jlv-project:v3
         resources:
-        requests:
-          cpu: "500m"          # Minimum CPU required (adjust as needed)
-          memory: "2Gi"        # Minimum memory required
-        limits:
-          cpu: "2000m"         # Maximum CPU allowed
-          memory: "4Gi"        # Maximum memory allowed
+          requests:
+            cpu: "500m"          # Minimum CPU required (adjust as needed)
+            memory: "2Gi"        # Minimum memory required
+          limits:
+            cpu: "2000m"         # Maximum CPU allowed
+            memory: "4Gi"        # Maximum memory allowed
         ports:
         - containerPort: 8080
 
