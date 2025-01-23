@@ -112,6 +112,11 @@ jobs:
       - name: Health Check
         run: |
             kubectl wait --for=condition=ready pod -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} --timeout=480s
-            kubectl port-forward service/test-service-cicd 8080:8080 -n ${{ env.K8S_NAMESPACE }} &
-            curl http://localhost:8080/health
+      
+      - name: Access Service via NodePort
+        run: |              
+              KIND_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kind-control-plane)
+              NODE_PORT=30080
+              sleep 5
+              curl http://$KIND_NODE_IP:$NODE_PORT/health || curl http://localhost:$NODE_PORT/health
 
