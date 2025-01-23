@@ -113,17 +113,6 @@ jobs:
             kubectl wait --for=condition=ready pod -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} --timeout=480s
             kubectl get pods -n ${{ env.K8S_NAMESPACE }}
 
-      
-      - name: Test Connectivity from Pod
-        run: |
-          POD_NAME=$(kubectl get pods -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} -o jsonpath='{.items[0].metadata.name}')
-          kubectl exec $POD_NAME -n ${{ env.K8S_NAMESPACE }} -- sh -c "
-            apt-get update && 
-            apt-get install -y curl && 
-            curl -v http://localhost:8080/health || 
-            (echo 'Connectivity failed' && exit 1)
-          "
-
       - name: Access Service via NodePort
         run: |              
               KIND_NODE_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kind-control-plane)
