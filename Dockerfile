@@ -2,6 +2,9 @@ FROM tensorflow/tensorflow:latest
 
 WORKDIR /app
 
+# Set root user explicitly
+USER root
+
 COPY . /app
 
 RUN echo \
