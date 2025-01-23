@@ -80,8 +80,9 @@ jobs:
               version: v0.20.0
           
       - name: Create kind Cluster
-        run: kind create cluster --name kind
-            kind get clusters
+        run: |
+              kind create cluster --name kind
+              kind get clusters
         
       - name: Configure kubectl for kind
         run: |
