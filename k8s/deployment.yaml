@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: app-container
-        image: violalag/jlv-project:v3
+        image: violalag/jlv-project:latest
         resources:
           limits:
               memory: "512Mi"
@@ -26,6 +26,20 @@ spec:
               cpu: "250m"      
         ports:
         - containerPort: 8080
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 15
 
 
         
