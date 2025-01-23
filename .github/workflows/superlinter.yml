@@ -108,6 +108,6 @@ jobs:
       - name: Health Check
         run: |
             kubectl wait --for=condition=ready pod -l app=test-deploy -n ${{ env.K8S_NAMESPACE }} --timeout=480s
-            kubectl port-forward service/test-service-cicd 8080:80 -n ${{ env.K8S_NAMESPACE }} &
+            kubectl port-forward service/test-service-cicd 8080:8080 -n ${{ env.K8S_NAMESPACE }} &
             curl http://localhost:8080/health
 
