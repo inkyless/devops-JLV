@@ -1,11 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-deployment
+  name: test-deployment-cicd
   labels:
     app: test-deploy
 spec:
   replicas: 3
+  progressDeadlineSeconds: 600  # Increase timeout to 10 minutes
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: test-deploy
@@ -16,7 +21,8 @@ spec:
     spec:
       containers:
       - name: app-container
-        image: violalag/jlv-project:v3
+        image: violalag/jlv-project:latest
+        imagePullPolicy: Always
         resources:
           limits:
               memory: "512Mi"
@@ -26,6 +32,7 @@ spec:
               cpu: "250m"      
         ports:
         - containerPort: 8080
+
 
 
         

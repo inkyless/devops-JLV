@@ -1,5 +1,5 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, render_template
+from flask import Flask, flash, request, redirect, url_for, render_template, jsonify
 from werkzeug.utils import secure_filename
 import cv2
 from datetime import datetime as dt
@@ -42,6 +42,9 @@ def prepare_image(image_path):
 def home():
     return render_template("index.html")
 
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "healthy"}), 200
 
 # Make APP route now
 @app.route("/result", methods=["POST"])
@@ -80,4 +83,4 @@ def upload_file():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=8080)
